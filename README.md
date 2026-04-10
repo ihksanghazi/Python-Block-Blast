@@ -45,7 +45,7 @@
 
 ## 🤝 Cara Kontribusi (Menambahkan Level/Soal)
 
-Kami sangat menyambut kontribusi dari komunitas, terutama untuk memperbanyak bank soal Python!
+Saya sangat terbuka bagi siapapun untuk kontribusi, terutama untuk memperbanyak bank soal Python!
 
 ### Langkah-langkah Menambahkan Soal:
 
