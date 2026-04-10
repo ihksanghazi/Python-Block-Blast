@@ -77,7 +77,3 @@ Kami sangat menyambut kontribusi dari komunitas, terutama untuk memperbanyak ban
 ## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
-Dibuat dengan ❤️ untuk komunitas Python Indonesia.
