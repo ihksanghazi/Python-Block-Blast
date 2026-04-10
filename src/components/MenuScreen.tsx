@@ -6,8 +6,8 @@ interface MenuScreenProps {
 
 const modes: { mode: GameMode; label: string; desc: string; emoji: string }[] = [
   { mode: 'classic', label: 'Classic', desc: 'Santai, tanpa timer', emoji: '📚' },
-  { mode: 'challenge', label: 'Challenge', desc: '30 detik per soal', emoji: '⏱️' },
-  { mode: 'hardcore', label: 'Hardcore', desc: '15 detik + penalti', emoji: '🔥' },
+  { mode: 'challenge', label: 'Challenge', desc: 'Speed Run: 30 Detik', emoji: '⏱️' },
+  { mode: 'hardcore', label: 'Hardcore', desc: 'Mode Pro: 15 Detik', emoji: '🔥' },
 ];
 
 export default function MenuScreen({ onStart }: MenuScreenProps) {
@@ -39,6 +39,24 @@ export default function MenuScreen({ onStart }: MenuScreenProps) {
           </button>
         ))}
       </div>
+
+      <footer className="mt-8 flex flex-col items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <span>Made with ❤️ for Learning Python</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <a
+            href="https://github.com/ihksanghazi/Python-Block-Blast"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground hover:underline"
+          >
+            GitHub Repository
+          </a>
+          <span className="opacity-20">|</span>
+          <span>© 2026 Python Block Blast</span>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, GameMode, GamePhase, Difficulty, BlockShape } from './types';
 import { questions } from './questions';
-import { generateBlock, canPlaceBlock, placeBlock, clearLines, hasValidPlacement, createEmptyGrid } from './blocks';
+import { generateBlock, canPlaceBlock, placeBlock, clearLines, hasValidPlacement, createEmptyGrid, getClearingCells } from './blocks';
 import { validateAnswer } from './validation';
 
 function getQuestionForLevel(level: Difficulty, exclude: Set<string>) {
@@ -36,6 +36,7 @@ export function useGame() {
     questionsAnswered: 0,
     linesCleared: 0,
     timerSeconds: null,
+    clearingCells: null,
   });
 
   const askedRef = useRef(new Set<string>());
@@ -55,12 +56,16 @@ export function useGame() {
       setState(s => {
         if (s.timerSeconds === null || s.timerSeconds <= 1) {
           clearTimer();
-          // Time up - skip question, get a new one
+          
+          if (s.mode === 'challenge' || s.mode === 'hardcore') {
+            return { ...s, phase: 'gameover', timerSeconds: 0 };
+          }
+
+          // Fallback logic (should not be reached in timed modes)
           const q = getQuestionForLevel(s.level, askedRef.current);
           if (q) askedRef.current.add(q.id);
           return {
             ...s,
-            timerSeconds: s.mode === 'challenge' ? 30 : s.mode === 'hardcore' ? 15 : null,
             currentQuestion: q,
             wrongCount: 0,
             showHint: false,
@@ -133,6 +138,7 @@ export function useGame() {
     if (!canPlaceBlock(state.grid, state.currentBlock, row, col)) return false;
 
     const placed = placeBlock(state.grid, state.currentBlock, row, col);
+    const clearingCells = getClearingCells(placed);
     const { newGrid, cleared } = clearLines(placed);
 
     const newScore = state.score + (cleared > 0 ? cleared * 100 * (state.combo + 1) : 10);
@@ -142,26 +148,58 @@ export function useGame() {
 
     // Get next question
     const q = getQuestionForLevel(newLevel, askedRef.current);
-    if (q) askedRef.current.add(q.id);
+    
+    if (cleared > 0) {
+      // First show the placing
+      setState(s => ({
+        ...s,
+        grid: placed,
+        clearingCells: clearingCells,
+      }));
 
-    const timerSec = state.mode === 'challenge' ? 30 : state.mode === 'hardcore' ? 15 : null;
+      // Then after animation, update everything
+      setTimeout(() => {
+        if (q) askedRef.current.add(q.id);
+        const timerSec = state.mode === 'challenge' ? 30 : state.mode === 'hardcore' ? 15 : null;
 
-    setState(s => ({
-      ...s,
-      grid: newGrid,
-      score: newScore,
-      combo: newCombo,
-      level: newLevel,
-      linesCleared: newLinesCleared,
-      phase: 'coding',
-      currentBlock: null,
-      currentQuestion: q,
-      wrongCount: 0,
-      showHint: false,
-      timerSeconds: timerSec,
-    }));
+        setState(s => ({
+          ...s,
+          grid: newGrid,
+          score: newScore,
+          combo: newCombo,
+          level: newLevel,
+          linesCleared: newLinesCleared,
+          phase: 'coding',
+          currentBlock: null,
+          currentQuestion: q,
+          wrongCount: 0,
+          showHint: false,
+          timerSeconds: timerSec,
+          clearingCells: null,
+        }));
+        if (timerSec) startTimer(timerSec);
+      }, 500); // 500ms animation duration
+    } else {
+      if (q) askedRef.current.add(q.id);
+      const timerSec = state.mode === 'challenge' ? 30 : state.mode === 'hardcore' ? 15 : null;
 
-    if (timerSec) startTimer(timerSec);
+      setState(s => ({
+        ...s,
+        grid: newGrid,
+        score: newScore,
+        combo: newCombo,
+        level: newLevel,
+        linesCleared: newLinesCleared,
+        phase: 'coding',
+        currentBlock: null,
+        currentQuestion: q,
+        wrongCount: 0,
+        showHint: false,
+        timerSeconds: timerSec,
+        clearingCells: null,
+      }));
+      if (timerSec) startTimer(timerSec);
+    }
 
     return true;
   }, [state, startTimer]);

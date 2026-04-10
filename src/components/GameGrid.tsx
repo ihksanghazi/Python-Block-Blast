@@ -7,11 +7,16 @@ interface GameGridProps {
   currentBlock: BlockShape | null;
   onPlace: (row: number, col: number) => boolean;
   phase: string;
+  clearingCells?: [number, number][] | null;
 }
 
-export default function GameGrid({ grid, currentBlock, onPlace, phase }: GameGridProps) {
+export default function GameGrid({ grid, currentBlock, onPlace, phase, clearingCells }: GameGridProps) {
   const [hover, setHover] = useState<[number, number] | null>(null);
   const isPlacing = phase === 'placing' && currentBlock;
+
+  const isClearing = (r: number, c: number) => {
+    return clearingCells?.some(([cr, cc]) => cr === r && cc === c);
+  };
 
   const getHoverCells = useCallback((): Set<string> => {
     if (!hover || !currentBlock || !isPlacing) return new Set();
@@ -36,22 +41,26 @@ export default function GameGrid({ grid, currentBlock, onPlace, phase }: GameGri
             const key = `${r},${c}`;
             const isHovered = hoverCells.has(key);
 
+            const isCellClearing = isClearing(r, c);
+
             return (
               <div
                 key={key}
-                className="aspect-square w-8 cursor-pointer rounded-[4px] transition-all duration-100 sm:w-9 md:w-10"
+                className={`aspect-square w-8 cursor-pointer rounded-[4px] transition-all duration-100 sm:w-9 md:w-10 ${isCellClearing ? 'animate-clear z-10' : ''}`}
                 style={{
                   backgroundColor: cell
                     ? `hsl(${cell})`
                     : isHovered
                       ? `hsl(${currentBlock!.color} / 0.5)`
                       : 'hsl(var(--background))',
-                  boxShadow: cell
+                  boxShadow: cell && !isCellClearing
                     ? 'inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.2)'
                     : 'none',
                   border: isInvalid && isHovered
                     ? '2px solid hsl(var(--destructive))'
                     : 'none',
+                  opacity: isCellClearing ? 0 : 1,
+                  transform: isCellClearing ? 'scale(1.5)' : 'scale(1)',
                 }}
                 onMouseEnter={() => isPlacing && setHover([r, c])}
                 onMouseLeave={() => setHover(null)}

@@ -107,6 +107,30 @@ export function clearLines(grid: (string | null)[][]): {
   return { newGrid, cleared: rowsToClear.size + colsToClear.size };
 }
 
+export function getClearingCells(grid: (string | null)[][]): [number, number][] {
+  const rowsToClear = new Set<number>();
+  const colsToClear = new Set<number>();
+
+  for (let r = 0; r < 8; r++) {
+    if (grid[r].every(c => c !== null)) rowsToClear.add(r);
+  }
+  for (let c = 0; c < 8; c++) {
+    if (grid.every(row => row[c] !== null)) colsToClear.add(c);
+  }
+
+  const cells: [number, number][] = [];
+  for (const r of rowsToClear) {
+    for (let c = 0; c < 8; c++) cells.push([r, c]);
+  }
+  for (const c of colsToClear) {
+    for (let r = 0; r < 8; r++) {
+      if (!rowsToClear.has(r)) cells.push([r, c]);
+    }
+  }
+
+  return cells;
+}
+
 export function hasValidPlacement(grid: (string | null)[][], block: BlockShape): boolean {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {

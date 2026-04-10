@@ -32,4 +32,5 @@ export interface GameState {
   questionsAnswered: number;
   linesCleared: number;
   timerSeconds: number | null;
+  clearingCells: [number, number][] | null;
 }

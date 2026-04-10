@@ -64,6 +64,7 @@ const GameScreen = () => {
             currentBlock={state.currentBlock}
             onPlace={placeBlockOnGrid}
             phase={state.phase}
+            clearingCells={state.clearingCells}
           />
         </div>
 
