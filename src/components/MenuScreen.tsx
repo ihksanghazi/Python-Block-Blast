@@ -7,7 +7,7 @@ interface MenuScreenProps {
 const modes: { mode: GameMode; label: string; desc: string; emoji: string }[] = [
   { mode: 'classic', label: 'Classic', desc: 'Santai, tanpa timer', emoji: '📚' },
   { mode: 'challenge', label: 'Challenge', desc: 'Speed Run: 30 Detik', emoji: '⏱️' },
-  { mode: 'hardcore', label: 'Hardcore', desc: 'Mode Pro: 15 Detik', emoji: '🔥' },
+  { mode: 'hardcore', label: 'Hardcore', desc: 'Sudden Death: 15s & No Errors!', emoji: '💀' },
 ];
 
 export default function MenuScreen({ onStart }: MenuScreenProps) {

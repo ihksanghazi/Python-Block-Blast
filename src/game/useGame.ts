@@ -120,6 +120,11 @@ export function useGame() {
       }));
       return true;
     } else {
+      if (state.mode === 'hardcore') {
+        clearTimer();
+        setState(s => ({ ...s, phase: 'gameover' }));
+        return false;
+      }
       setState(s => {
         const wc = s.wrongCount + 1;
         return {
@@ -131,7 +136,7 @@ export function useGame() {
       });
       return false;
     }
-  }, [state.currentQuestion, clearTimer]);
+  }, [state.currentQuestion, state.mode, clearTimer]);
 
   const placeBlockOnGrid = useCallback((row: number, col: number): boolean => {
     if (!state.currentBlock) return false;
